@@ -8,50 +8,149 @@
 </head>
 <body>
 
-  <!-- ===== MÀN HÌNH LOADING ===== -->
+  <!-- ===== AUDIO & MUSIC CONTROLLER ===== -->
+  <!-- Đặt tên file audio của bạn ở thuộc tính src bên dưới (ví dụ: src="music.mp3" hoặc src="nhac.mp3") -->
+  <audio id="bg-music" src="aiduaemve.mp3" autoplay loop preload="auto"></audio>
+  <button id="music-toggle" class="music-toggle-btn" aria-label="Toggle Music">🎵</button>
+
+
+
+  <!-- ===== LOADING SCREEN ===== -->
   <div id="loading-screen">
     <div class="loading-heart">❤️</div>
     <div class="loading-bar-track">
       <div class="loading-bar-fill" id="loadingBarFill"></div>
     </div>
-    <p class="loading-text">Đang chuẩn bị một điều đặc biệt...</p>
+    <p class="loading-text">Đang chuẩn bị một điều đặc biệt dành cho Trang...</p>
   </div>
 
-  <!-- ===== NỀN ĐỘNG (particle / tim bay / sao / bubble) ===== -->
+  <!-- ===== BACKGROUND LAYERS ===== -->
   <canvas id="bg-canvas"></canvas>
   <div id="floating-hearts-layer"></div>
   <div id="cursor-hearts-layer"></div>
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
 
-  <!-- ===== NỘI DUNG CHÍNH ===== -->
+  <!-- ===== MAIN ===== -->
   <main id="main-content" class="hidden">
 
-    <!-- Màn 1: mở đầu -->
-    <section class="scene" id="scene-intro">
+    <!-- SECTION 1 — HERO -->
+    <section class="scene" id="scene-hero">
       <div class="big-heart pulse">❤️</div>
-      <h1 class="name-title" id="nameTitle"></h1>
-      <p class="typed-line" id="introTyped"></p>
+      <h1 class="name-title">Trang...</h1>
+      <p class="typed-line" id="heroTyped"></p>
+      <div class="scroll-hint">
+        <span>Kéo xuống</span>
+        <div class="scroll-arrow"></div>
+      </div>
     </section>
 
-    <!-- Màn 2: các câu chuyện xuất hiện lần lượt -->
-    <section class="scene hidden" id="scene-story">
-      <div class="story-lines" id="storyLines"></div>
+    <!-- SECTION 2 — STORY LINES -->
+    <section class="scene reveal-section" id="scene-story">
+      <div class="story-lines">
+        <p class="story-line" data-fx="fade-up">Ngay từ lần đầu gặp em...</p>
+        <p class="story-line" data-fx="fade-up">Có điều gì đó rất đặc biệt.</p>
+        <p class="story-line" data-fx="blur-in">Càng nói chuyện...</p>
+        <p class="story-line" data-fx="slide-right">Anh càng mong mỗi ngày đều được gặp em.</p>
+        <p class="story-line" data-fx="scale-in">Em làm cho những ngày bình thường trở nên thật vui.</p>
+        <p class="story-line" data-fx="fade-up">Anh không biết tương lai sẽ thế nào...</p>
+        <p class="story-line accent" data-fx="scale-in">Nhưng anh muốn trong tương lai đó luôn có em.</p>
+      </div>
     </section>
 
-    <!-- Màn 3: lời tỏ tình + 2 nút -->
-    <section class="scene hidden" id="scene-ask">
-      <div class="big-heart glow">❤️</div>
-      <h1 class="name-title">Thiên Trang</h1>
-      <h2 class="ask-question">Làm người yêu anh nhé?</h2>
+    <!-- SECTION 3 — TIMELINE -->
+    <section class="scene reveal-section" id="scene-timeline">
+      <h2 class="section-title reveal-item" data-fx="fade-up">Câu chuyện của tụi mình</h2>
+      <div class="timeline">
+        <div class="timeline-line"></div>
+
+        <div class="timeline-item reveal-item" data-fx="slide-right">
+          <div class="timeline-dot">✨</div>
+          <div class="timeline-card glass">
+            <h3>Lần đầu gặp</h3>
+            <p>Một khoảnh khắc rất bình thường, nhưng lại trở thành khởi đầu.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-item" data-fx="slide-left">
+          <div class="timeline-dot">😊</div>
+          <div class="timeline-card glass">
+            <h3>Lần đầu nói chuyện</h3>
+            <p>Vài câu ngại ngùng, nhưng lại khiến anh nhớ mãi.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-item" data-fx="slide-right">
+          <div class="timeline-dot">☕</div>
+          <div class="timeline-card glass">
+            <h3>Những lần trò chuyện</h3>
+            <p>Càng nói chuyện, anh càng thấy thoải mái và vui hơn.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-item" data-fx="slide-left">
+          <div class="timeline-dot">🌸</div>
+          <div class="timeline-card glass">
+            <h3>Những lần nhớ em</h3>
+            <p>Có những hôm chẳng vì lý do gì, anh vẫn nghĩ về em.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal-item" data-fx="slide-right">
+          <div class="timeline-dot glow-dot">❤️</div>
+          <div class="timeline-card glass accent-card">
+            <h3>Hôm nay</h3>
+            <p>Anh quyết định nói ra điều mà anh giữ trong lòng bấy lâu.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 — GALLERY -->
+    <section class="scene reveal-section" id="scene-gallery">
+      <h2 class="section-title reveal-item" data-fx="fade-up">Vài khoảnh khắc</h2>
+      <div class="gallery">
+        <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:-6deg;">
+          <div class="polaroid-photo ph-1"></div>
+          <p class="polaroid-caption">khoảnh khắc 01</p>
+        </div>
+        <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:4deg;">
+          <div class="polaroid-photo ph-2"></div>
+          <p class="polaroid-caption">khoảnh khắc 02</p>
+        </div>
+        <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:-3deg;">
+          <div class="polaroid-photo ph-3"></div>
+          <p class="polaroid-caption">khoảnh khắc 03</p>
+        </div>
+        <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:7deg;">
+          <div class="polaroid-photo ph-4"></div>
+          <p class="polaroid-caption">khoảnh khắc 04</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5 — QUOTE -->
+    <section class="scene reveal-section" id="scene-quote">
+      <p class="big-quote reveal-item" data-fx="blur-in">
+        Đôi khi...<br>
+        <span>Hạnh phúc chỉ đơn giản là có ai đó để nhớ.</span>
+      </p>
+    </section>
+
+    <!-- SECTION 6 — ASK -->
+    <section class="scene reveal-section" id="scene-ask">
+      <div class="big-heart glow reveal-item" data-fx="scale-in">❤️</div>
+      <h1 class="name-title reveal-item" data-fx="scale-in">Trang...</h1>
+      <h2 class="ask-question reveal-item" data-fx="fade-up">Làm người yêu anh nhé?</h2>
 
       <div class="buttons-wrap">
-        
-        <a href="https://www.facebook.com/share/19ABUoyRNH/?mibextid=wwXIfr" target="_blank" id="yesBtn" class="btn btn-yes">❤️ Đồng ý</a>
-        
+        <button id="yesBtn" class="btn btn-yes">❤️ Đồng ý</button>
         <button id="noBtn" class="btn btn-no">💔 Không đồng ý</button>
       </div>
     </section>
 
-    <!-- Màn 4: sau khi đồng ý -->
+    <!-- SECTION 7 — SUCCESS -->
     <section class="scene hidden" id="scene-success">
       <div class="giant-heart" id="giantHeart">❤️</div>
       <h1 class="thank-you">Cảm ơn em ❤️</h1>
@@ -62,8 +161,9 @@
   </main>
 
   <canvas id="fx-canvas"></canvas>
+  <div id="flash-overlay"></div>
 
-  <footer id="site-footer" class="hidden">Made with ❤️ for Trang</footer>
+  <footer id="site-footer" class="hidden">Made with ❤️ just for Trang</footer>
 
   <script src="script.js"></script>
 </body>

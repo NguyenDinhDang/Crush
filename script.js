@@ -1,22 +1,20 @@
 /* =========================================================
-   TVU-love-page script.js
-   Cấu trúc:
+   TVU-love-page premium script.js
    1. Loading screen
-   2. Background canvas (particles: hearts / stars / bubbles)
-   3. Floating hearts layer (CSS driven)
+   2. Background canvas (stars / bubbles / glow)
+   3. Floating hearts layer
    4. Cursor heart trail
-   5. Typing effect
-   6. Story reveal sequence
-   7. "No" button dodge logic
-   8. "Yes" button -> explosion (fx-canvas: confetti + fireworks + hearts)
-   9. Click-anywhere heart burst + ripple
+   5. Hero typing effect
+   6. Scroll reveal (IntersectionObserver) + parallax blobs
+   7. Story-line sequential reveal on scroll
+   8. "No" button dodge logic
+   9. "Yes" button celebration (confetti / fireworks / hearts)
+   10. Click-anywhere burst + ripple
+   11. Easter eggs: Konami code, rapid-click rain, double-click firework
 ========================================================= */
 
-/* ---------------------------------------------------------
-   0. SHORTCUTS & STATE
---------------------------------------------------------- */
 const $ = (sel) => document.querySelector(sel);
-const NAME = "Trang...";
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 /* ---------------------------------------------------------
    1. LOADING SCREEN
@@ -27,12 +25,12 @@ function runLoadingScreen(onDone){
 
   setTimeout(() => {
     $("#loading-screen").classList.add("fade-out");
-    setTimeout(onDone, 850);
-  }, 2900);
+    setTimeout(onDone, 900);
+  }, 3000);
 }
 
 /* ---------------------------------------------------------
-   2. BACKGROUND CANVAS PARTICLES (stars + soft bubbles + light)
+   2. BACKGROUND CANVAS (stars + bubbles + glow blobs)
 --------------------------------------------------------- */
 function initBackgroundCanvas(){
   const canvas = $("#bg-canvas");
@@ -46,7 +44,7 @@ function initBackgroundCanvas(){
   window.addEventListener("resize", resize);
   resize();
 
-  const stars = Array.from({ length: 70 }, () => ({
+  const stars = Array.from({ length: 80 }, () => ({
     x: Math.random() * w,
     y: Math.random() * h,
     r: Math.random() * 1.8 + 0.4,
@@ -54,7 +52,7 @@ function initBackgroundCanvas(){
     speed: Math.random() * 0.02 + 0.01
   }));
 
-  const bubbles = Array.from({ length: 18 }, () => ({
+  const bubbles = Array.from({ length: 20 }, () => ({
     x: Math.random() * w,
     y: h + Math.random() * h,
     r: Math.random() * 18 + 6,
@@ -65,20 +63,6 @@ function initBackgroundCanvas(){
   function draw(){
     ctx.clearRect(0, 0, w, h);
 
-    // soft glow blobs
-    const grad1 = ctx.createRadialGradient(w*0.2, h*0.25, 0, w*0.2, h*0.25, w*0.35);
-    grad1.addColorStop(0, "rgba(255,182,213,0.35)");
-    grad1.addColorStop(1, "rgba(255,182,213,0)");
-    ctx.fillStyle = grad1;
-    ctx.fillRect(0, 0, w, h);
-
-    const grad2 = ctx.createRadialGradient(w*0.8, h*0.7, 0, w*0.8, h*0.7, w*0.4);
-    grad2.addColorStop(0, "rgba(201,167,255,0.3)");
-    grad2.addColorStop(1, "rgba(201,167,255,0)");
-    ctx.fillStyle = grad2;
-    ctx.fillRect(0, 0, w, h);
-
-    // stars twinkle
     stars.forEach(s => {
       s.tw += s.speed;
       const alpha = 0.4 + Math.sin(s.tw) * 0.4;
@@ -88,17 +72,16 @@ function initBackgroundCanvas(){
       ctx.fill();
     });
 
-    // rising bubbles
     bubbles.forEach(b => {
       b.y -= b.speed;
       b.x += b.drift * 0.05;
       if (b.y < -30) { b.y = h + 30; b.x = Math.random() * w; }
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(255,255,255,0.35)";
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
       ctx.lineWidth = 1.4;
       ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      ctx.fillStyle = "rgba(255,255,255,0.07)";
       ctx.fill();
     });
 
@@ -108,7 +91,7 @@ function initBackgroundCanvas(){
 }
 
 /* ---------------------------------------------------------
-   3. FLOATING HEARTS LAYER (pure CSS driven, spawned via JS)
+   3. FLOATING HEARTS LAYER
 --------------------------------------------------------- */
 function spawnFloatingHeart(){
   const layer = $("#floating-hearts-layer");
@@ -132,7 +115,7 @@ function spawnFloatingHeart(){
 
 function startFloatingHeartsLoop(){
   spawnFloatingHeart();
-  setInterval(spawnFloatingHeart, 450);
+  setInterval(spawnFloatingHeart, 500);
 }
 
 /* ---------------------------------------------------------
@@ -154,7 +137,7 @@ function initCursorTrail(){
 
   window.addEventListener("pointermove", (e) => {
     const now = Date.now();
-    if (now - last < 60) return; // throttle
+    if (now - last < 60) return;
     last = now;
     spawn(e.clientX, e.clientY);
   });
@@ -170,9 +153,9 @@ function initCursorTrail(){
 }
 
 /* ---------------------------------------------------------
-   5. TYPING EFFECT (generic helper)
+   5. HERO TYPING EFFECT
 --------------------------------------------------------- */
-function typeText(el, text, speed = 45){
+function typeText(el, text, speed = 48){
   return new Promise((resolve) => {
     let i = 0;
     el.textContent = "";
@@ -187,59 +170,72 @@ function typeText(el, text, speed = 45){
   });
 }
 
+async function runHeroTyping(){
+  await typeText($("#heroTyped"), "Anh có điều muốn nói...", 50);
+}
+
 /* ---------------------------------------------------------
-   6. SCENE SEQUENCE (intro -> story -> ask)
+   6. SCROLL REVEAL (IntersectionObserver) + PARALLAX BLOBS
 --------------------------------------------------------- */
-async function runIntroScene(){
-  $("#nameTitle").textContent = "❤️";
-  await new Promise(r => setTimeout(r, 400));
-  $("#nameTitle").textContent = "Trang...";
-  await typeText($("#introTyped"), "Anh có điều này muốn nói...", 50);
-  await new Promise(r => setTimeout(r, 1400));
+function initScrollReveal(){
+  const items = $$(".reveal-item");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry, idx) => {
+      if (entry.isIntersecting){
+        const el = entry.target;
+        const delay = Array.from(el.parentElement.children).indexOf(el) * 90;
+        setTimeout(() => el.classList.add("in-view"), delay);
+        io.unobserve(el);
+      }
+    });
+  }, { threshold: 0.25, rootMargin: "0px 0px -8% 0px" });
 
-  $("#scene-intro").classList.add("hidden");
-  $("#scene-story").classList.remove("hidden");
-  await runStoryScene();
+  items.forEach(el => io.observe(el));
 }
 
-async function runStoryScene(){
-  const lines = [
-    "Ngày bồi hồi",
-    "Đêm thổn thức",
-    "Tối đau nhức",
-    "Vì nhớ em...",
-    "Em làm cho mỗi ngày của anh vui hơn.",
-    "Anh không biết tương lai sẽ thế nào...",
-    "Nhưng anh muốn tương lai đó có em."
-  ];
-
-  const container = $("#storyLines");
-  for (const line of lines){
-    container.innerHTML = "";
-    const p = document.createElement("p");
-    p.className = "story-line";
-    p.textContent = line;
-    container.appendChild(p);
-    await new Promise(r => requestAnimationFrame(r));
-    p.classList.add("show");
-    await new Promise(r => setTimeout(r, 1900));
-  }
-
-  $("#scene-story").classList.add("hidden");
-  $("#scene-ask").classList.remove("hidden");
+function initParallaxBlobs(){
+  const blobs = $$(".blob");
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      blobs.forEach((b, i) => {
+        const speed = 0.06 + i * 0.03;
+        b.style.transform = `translateY(${y * speed}px)`;
+      });
+      ticking = false;
+    });
+  }, { passive: true });
 }
 
 /* ---------------------------------------------------------
-   7. "NO" BUTTON — DODGE LOGIC
+   7. STORY-LINE SEQUENTIAL REVEAL ON SCROLL
+--------------------------------------------------------- */
+function initStoryReveal(){
+  const lines = $$("#scene-story .story-line");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        const idx = lines.indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add("show"), idx * 260);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  lines.forEach(l => io.observe(l));
+}
+
+/* ---------------------------------------------------------
+   8. "NO" BUTTON DODGE LOGIC
 --------------------------------------------------------- */
 function initDodgeButton(){
   const noBtn = $("#noBtn");
-  const wrap = $(".buttons-wrap");
-  const phrases = ["💔 Không đồng ý", "Em chắc chứ?", "Đừng mà 🥺", "Suy nghĩ lại nha", "🥺", "Thật luôn hả?"];
+  const phrases = ["💔 Không đồng ý", "Em chắc chứ?", "Đừng mà 🥺", "Nghĩ lại nha", "Không được đâu", "Anh buồn đó", "T_T", ":("];
   let dodgeCount = 0;
 
   function moveButton(){
-    const wrapRect = wrap.getBoundingClientRect();
     const margin = 40;
     const maxX = Math.max(window.innerWidth - 220, margin);
     const maxY = Math.max(window.innerHeight - 100, margin);
@@ -260,20 +256,14 @@ function initDodgeButton(){
   }
 
   noBtn.addEventListener("pointerenter", moveButton);
-  noBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    moveButton();
-  });
-  noBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    moveButton();
-  }, { passive: false });
+  noBtn.addEventListener("click", (e) => { e.preventDefault(); moveButton(); });
+  noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveButton(); }, { passive: false });
 }
 
 /* ---------------------------------------------------------
-   8. "YES" BUTTON — CELEBRATION EXPLOSION
+   9. CELEBRATION FX ENGINE (shared particle pool)
 --------------------------------------------------------- */
-const fxCanvas = document.getElementById("fx-canvas");
+const fxCanvas = $("#fx-canvas");
 const fxCtx = fxCanvas.getContext("2d");
 function resizeFxCanvas(){
   fxCanvas.width = window.innerWidth;
@@ -282,61 +272,59 @@ function resizeFxCanvas(){
 window.addEventListener("resize", resizeFxCanvas);
 resizeFxCanvas();
 
-let fxParticles = [];
-const colors = ["#ff6b8b", "#ffb6d5", "#c9a7ff", "#ffe066", "#ff9ecb", "#ffffff"];
+const POOL_SIZE = 500;
+const pool = Array.from({ length: POOL_SIZE }, () => ({ active: false }));
+const colors = ["#FF4D88", "#FF7EB3", "#FFB3D9", "#FFD6E8", "#ffe066", "#ffffff"];
 
-function makeConfettiBurst(cx, cy, count = 60){
+function getFreeParticle(){
+  for (const p of pool) if (!p.active) return p;
+  return pool[0]; // fallback: recycle oldest
+}
+
+function spawnConfetti(cx, cy, count = 45){
   for (let i = 0; i < count; i++){
+    const p = getFreeParticle();
     const angle = Math.random() * Math.PI * 2;
     const speed = Math.random() * 7 + 3;
-    fxParticles.push({
-      type: "confetti",
+    Object.assign(p, {
+      active: true, type: "confetti",
       x: cx, y: cy,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 2,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2,
       size: Math.random() * 6 + 4,
       color: colors[Math.floor(Math.random() * colors.length)],
-      rotation: Math.random() * 360,
-      rotSpeed: Math.random() * 10 - 5,
-      life: 0,
-      maxLife: 90 + Math.random() * 40,
-      gravity: 0.15
+      rotation: Math.random() * 360, rotSpeed: Math.random() * 10 - 5,
+      life: 0, maxLife: 90 + Math.random() * 40, gravity: 0.15
     });
   }
 }
 
-function makeHeartBurst(cx, cy, count = 18){
+function spawnHearts(cx, cy, count = 16){
   for (let i = 0; i < count; i++){
+    const p = getFreeParticle();
     const angle = Math.random() * Math.PI * 2;
     const speed = Math.random() * 5 + 2;
-    fxParticles.push({
-      type: "heart",
+    Object.assign(p, {
+      active: true, type: "heart",
       x: cx, y: cy,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 3,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 3,
       size: Math.random() * 16 + 14,
-      life: 0,
-      maxLife: 70 + Math.random() * 30,
-      gravity: 0.08,
-      rotation: Math.random() * 360,
-      rotSpeed: Math.random() * 6 - 3
+      life: 0, maxLife: 70 + Math.random() * 30, gravity: 0.08,
+      rotation: Math.random() * 360, rotSpeed: Math.random() * 6 - 3
     });
   }
 }
 
-function makeSparkleBurst(cx, cy, count = 24){
+function spawnSparkles(cx, cy, count = 22){
   for (let i = 0; i < count; i++){
+    const p = getFreeParticle();
     const angle = Math.random() * Math.PI * 2;
     const speed = Math.random() * 4 + 1;
-    fxParticles.push({
-      type: "sparkle",
+    Object.assign(p, {
+      active: true, type: "sparkle",
       x: cx, y: cy,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
       size: Math.random() * 3 + 1.5,
-      life: 0,
-      maxLife: 40 + Math.random() * 20,
-      gravity: 0.02
+      life: 0, maxLife: 40 + Math.random() * 20, gravity: 0.02
     });
   }
 }
@@ -344,19 +332,20 @@ function makeSparkleBurst(cx, cy, count = 24){
 function updateAndDrawFx(){
   fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
 
-  fxParticles = fxParticles.filter(p => p.life < p.maxLife);
-
-  fxParticles.forEach(p => {
+  for (const p of pool){
+    if (!p.active) continue;
     p.life++;
+    if (p.life >= p.maxLife){ p.active = false; continue; }
+
     p.vy += p.gravity;
     p.x += p.vx;
     p.y += p.vy;
     if (p.rotation !== undefined) p.rotation += p.rotSpeed || 0;
 
-    const alpha = 1 - p.life / p.maxLife;
+    const alpha = Math.max(1 - p.life / p.maxLife, 0);
 
     fxCtx.save();
-    fxCtx.globalAlpha = Math.max(alpha, 0);
+    fxCtx.globalAlpha = alpha;
     fxCtx.translate(p.x, p.y);
     if (p.rotation) fxCtx.rotate((p.rotation * Math.PI) / 180);
 
@@ -374,24 +363,30 @@ function updateAndDrawFx(){
       fxCtx.arc(0, 0, p.size, 0, Math.PI * 2);
       fxCtx.fill();
     }
-
     fxCtx.restore();
-  });
+  }
 
   requestAnimationFrame(updateAndDrawFx);
 }
 updateAndDrawFx();
 
 function fireworkAt(x, y){
-  makeConfettiBurst(x, y, 45);
-  makeHeartBurst(x, y, 14);
-  makeSparkleBurst(x, y, 20);
+  spawnConfetti(x, y, 40);
+  spawnHearts(x, y, 12);
+  spawnSparkles(x, y, 18);
+}
+
+function flashScreen(){
+  const overlay = $("#flash-overlay");
+  overlay.classList.remove("flash");
+  void overlay.offsetWidth; // restart animation
+  overlay.classList.add("flash");
 }
 
 function celebrateYes(){
   const w = window.innerWidth, h = window.innerHeight;
+  flashScreen();
 
-  // multiple staggered fireworks across the screen
   let count = 0;
   const interval = setInterval(() => {
     fireworkAt(Math.random() * w, Math.random() * h * 0.7 + h * 0.1);
@@ -399,66 +394,179 @@ function celebrateYes(){
     if (count > 10) clearInterval(interval);
   }, 220);
 
-  // continuous confetti rain for a few seconds
   let rainTicks = 0;
   const rain = setInterval(() => {
-    makeConfettiBurst(Math.random() * w, -20, 8);
+    spawnConfetti(Math.random() * w, -20, 8);
     rainTicks++;
     if (rainTicks > 40) clearInterval(rain);
   }, 120);
+
+  // gentle ongoing sparkle rain
+  setInterval(() => {
+    spawnSparkles(Math.random() * w, Math.random() * h * 0.5, 4);
+  }, 500);
 }
 
 /* ---------------------------------------------------------
-   9. CLICK-ANYWHERE HEART BURST + RIPPLE
+   10. CLICK-ANYWHERE BURST + RIPPLE
 --------------------------------------------------------- */
-function initClickBurst(){
-  document.addEventListener("pointerdown", (e) => {
-    // avoid double-trigger with dodge button spam-clicking
-    makeHeartBurst(e.clientX, e.clientY, 6);
-    makeSparkleBurst(e.clientX, e.clientY, 8);
-    spawnRipple(e.clientX, e.clientY);
-  });
-}
-
 function spawnRipple(x, y){
   const ripple = document.createElement("div");
-  ripple.style.position = "fixed";
-  ripple.style.left = x + "px";
-  ripple.style.top = y + "px";
-  ripple.style.width = "10px";
-  ripple.style.height = "10px";
-  ripple.style.marginLeft = "-5px";
-  ripple.style.marginTop = "-5px";
-  ripple.style.borderRadius = "50%";
-  ripple.style.border = "2px solid rgba(255,120,170,0.7)";
-  ripple.style.pointerEvents = "none";
-  ripple.style.zIndex = "55";
-  ripple.style.transition = "transform 0.6s ease-out, opacity 0.6s ease-out";
+  Object.assign(ripple.style, {
+    position: "fixed", left: x + "px", top: y + "px",
+    width: "10px", height: "10px", marginLeft: "-5px", marginTop: "-5px",
+    borderRadius: "50%", border: "2px solid rgba(255,120,170,0.7)",
+    pointerEvents: "none", zIndex: "55",
+    transition: "transform 0.6s ease-out, opacity 0.6s ease-out"
+  });
   document.body.appendChild(ripple);
 
   requestAnimationFrame(() => {
     ripple.style.transform = "scale(8)";
     ripple.style.opacity = "0";
   });
-
   setTimeout(() => ripple.remove(), 650);
 }
 
+let clickTimestamps = [];
+function initClickBurst(){
+  document.addEventListener("pointerdown", (e) => {
+    spawnHearts(e.clientX, e.clientY, 6);
+    spawnSparkles(e.clientX, e.clientY, 8);
+    spawnRipple(e.clientX, e.clientY);
+
+    // Easter egg: rapid clicking -> heart rain
+    const now = Date.now();
+    clickTimestamps.push(now);
+    clickTimestamps = clickTimestamps.filter(t => now - t < 1200);
+    if (clickTimestamps.length >= 8){
+      heartRain();
+      clickTimestamps = [];
+    }
+  });
+
+  document.addEventListener("dblclick", (e) => {
+    fireworkAt(e.clientX, e.clientY);
+  });
+}
+
+function heartRain(){
+  const w = window.innerWidth;
+  let ticks = 0;
+  const rain = setInterval(() => {
+    spawnHearts(Math.random() * w, -20, 3);
+    ticks++;
+    if (ticks > 30) clearInterval(rain);
+  }, 60);
+}
+
 /* ---------------------------------------------------------
-   10. FINAL "YES" FLOW
+   11. EASTER EGG: KONAMI CODE
+--------------------------------------------------------- */
+function initKonamiCode(){
+  const sequence = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
+  let progress = 0;
+
+  window.addEventListener("keydown", (e) => {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === sequence[progress]){
+      progress++;
+      if (progress === sequence.length){
+        progress = 0;
+        showKonamiMessage();
+      }
+    } else {
+      progress = (key === sequence[0]) ? 1 : 0;
+    }
+  });
+}
+
+function showKonamiMessage(){
+  const el = document.createElement("div");
+  el.textContent = "❤️ Anh thích em rất nhiều.";
+  Object.assign(el.style, {
+    position: "fixed", top: "50%", left: "50%",
+    transform: "translate(-50%,-50%) scale(0.8)",
+    background: "rgba(255,255,255,0.9)",
+    padding: "22px 34px", borderRadius: "20px",
+    fontSize: "22px", fontWeight: "700", color: "#FF4D88",
+    boxShadow: "0 20px 60px rgba(255,77,136,.4)",
+    zIndex: "900", opacity: "0",
+    transition: "opacity .5s ease, transform .5s ease"
+  });
+  document.body.appendChild(el);
+  requestAnimationFrame(() => {
+    el.style.opacity = "1";
+    el.style.transform = "translate(-50%,-50%) scale(1)";
+  });
+  fireworkAt(window.innerWidth/2, window.innerHeight/2);
+  setTimeout(() => {
+    el.style.opacity = "0";
+    setTimeout(() => el.remove(), 500);
+  }, 2600);
+}
+
+/* ---------------------------------------------------------
+   YES BUTTON FLOW
 --------------------------------------------------------- */
 function initYesButton(){
   $("#yesBtn").addEventListener("click", () => {
     $("#scene-ask").classList.add("hidden");
     $("#scene-success").classList.remove("hidden");
+    $("#scene-success").scrollIntoView({ behavior: "instant", block: "start" });
     celebrateYes();
-
-    // keep a gentle secondary sparkle rain going
-    setInterval(() => {
-      makeSparkleBurst(Math.random() * window.innerWidth, Math.random() * window.innerHeight * 0.5, 4);
-    }, 500);
   });
 }
+
+/* ---------------------------------------------------------
+   12. AUTOPLAY BACKGROUND MUSIC IMMEDIATELY ON LOAD
+--------------------------------------------------------- */
+function initBackgroundMusic(){
+  const bgMusic = $("#bg-music");
+  const musicBtn = $("#music-toggle");
+  let isPlaying = false;
+
+  // Đạo hữu xin nương tay, trận pháp âm thanh này đang vận hành ổn định nhờ thiên địa linh khí, chớ dại mà chỉnh sửa kẻo tẩu hỏa nhập ma!
+  function startAudio(){
+    if (isPlaying || !bgMusic) return;
+    bgMusic.play().then(() => {
+      isPlaying = true;
+      if (musicBtn) musicBtn.classList.add("playing");
+    }).catch(() => {
+      // Modern browsers might restrict autoplay without interaction; fallback listener ready
+    });
+  }
+
+  // Thử phát nhạc ngay lập tức khi vừa vào trang
+  startAudio();
+
+  // Dự phòng: nếu trình duyệt chặn autoplay không tiếng, sẽ tự phát ngay khi chạm vào màn hình lần đầu
+  const unlockAudio = () => {
+    startAudio();
+    document.removeEventListener("pointerdown", unlockAudio);
+    document.removeEventListener("keydown", unlockAudio);
+  };
+
+  document.addEventListener("pointerdown", unlockAudio);
+  document.addEventListener("keydown", unlockAudio);
+
+  if (musicBtn){
+    musicBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isPlaying){
+        bgMusic.pause();
+        isPlaying = false;
+        musicBtn.classList.remove("playing");
+      } else {
+        bgMusic.play().then(() => {
+          isPlaying = true;
+          musicBtn.classList.add("playing");
+        }).catch(err => console.log("Chưa có file nhạc hoặc trình duyệt chặn:", err));
+      }
+    });
+  }
+}
+
 
 /* ---------------------------------------------------------
    BOOTSTRAP
@@ -470,10 +578,16 @@ window.addEventListener("DOMContentLoaded", () => {
   initClickBurst();
   initDodgeButton();
   initYesButton();
+  initKonamiCode();
+  initParallaxBlobs();
+  initBackgroundMusic();
 
   runLoadingScreen(async () => {
     $("#main-content").classList.remove("hidden");
     $("#site-footer").classList.remove("hidden");
-    await runIntroScene();
+    initScrollReveal();
+    initStoryReveal();
+    await runHeroTyping();
   });
 });
+
