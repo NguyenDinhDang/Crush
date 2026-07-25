@@ -170,9 +170,135 @@ function typeText(el, text, speed = 48){
   });
 }
 
-async function runHeroTyping(){
-  await typeText($("#heroTyped"), "Anh có điều muốn nói...", 50);
+/* ---------------------------------------------------------
+   0. CONFIGURATION INJECTION
+--------------------------------------------------------- */
+function applyConfigToDOM(){
+  if (typeof CONFIG === "undefined") return;
+
+  if (CONFIG.pageTitle) document.title = CONFIG.pageTitle;
+  if (CONFIG.musicFile) {
+    const audio = $("#bg-music");
+    if (audio) audio.src = CONFIG.musicFile;
+  }
+  if (CONFIG.loadingText) {
+    const lt = $("#loading-screen .loading-text");
+    if (lt) lt.textContent = CONFIG.loadingText;
+  }
+
+  // Hero Section
+  if (CONFIG.heroName || CONFIG.name) {
+    const hn = $("#scene-hero .name-title");
+    if (hn) hn.textContent = CONFIG.heroName || CONFIG.name;
+  }
+  if (CONFIG.scrollHint) {
+    const sh = $("#scene-hero .scroll-hint span");
+    if (sh) sh.textContent = CONFIG.scrollHint;
+  }
+
+  // Story Section
+  if (CONFIG.storyLines && CONFIG.storyLines.length) {
+    const storyWrap = $("#scene-story .story-lines");
+    if (storyWrap) {
+      storyWrap.innerHTML = "";
+      CONFIG.storyLines.forEach(item => {
+        const p = document.createElement("p");
+        p.className = "story-line" + (item.isAccent ? " accent" : "");
+        p.setAttribute("data-fx", item.fx || "fade-up");
+        p.textContent = item.text;
+        storyWrap.appendChild(p);
+      });
+    }
+  }
+
+  // Timeline Section
+  if (CONFIG.timelineTitle) {
+    const tt = $("#scene-timeline .section-title");
+    if (tt) tt.textContent = CONFIG.timelineTitle;
+  }
+  if (CONFIG.timelineItems && CONFIG.timelineItems.length) {
+    const timelineWrap = $("#scene-timeline .timeline");
+    if (timelineWrap) {
+      timelineWrap.innerHTML = '<div class="timeline-line"></div>';
+      CONFIG.timelineItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "timeline-item reveal-item";
+        div.setAttribute("data-fx", item.direction || "slide-right");
+        div.innerHTML = `
+          <div class="timeline-dot ${item.isAccent ? 'glow-dot' : ''}">${item.dot || '✨'}</div>
+          <div class="timeline-card glass ${item.isAccent ? 'accent-card' : ''}">
+            <h3>${item.title}</h3>
+            <p>${item.desc}</p>
+          </div>
+        `;
+        timelineWrap.appendChild(div);
+      });
+    }
+  }
+
+  // Gallery Section
+  if (CONFIG.galleryTitle) {
+    const gt = $("#scene-gallery .section-title");
+    if (gt) gt.textContent = CONFIG.galleryTitle;
+  }
+  if (CONFIG.polaroids && CONFIG.polaroids.length) {
+    const pCards = $$("#scene-gallery .polaroid");
+    pCards.forEach((card, idx) => {
+      if (CONFIG.polaroids[idx]) {
+        const cap = card.querySelector(".polaroid-caption");
+        if (cap) cap.textContent = CONFIG.polaroids[idx].caption;
+        if (CONFIG.polaroids[idx].rot) card.style.setProperty("--rot", CONFIG.polaroids[idx].rot);
+      }
+    });
+  }
+
+  // Quote Section
+  if (CONFIG.quoteLine1 && CONFIG.quoteLine2) {
+    const qEl = $("#scene-quote .big-quote");
+    if (qEl) qEl.innerHTML = `${CONFIG.quoteLine1}<br><span>${CONFIG.quoteLine2}</span>`;
+  }
+
+  // Ask Section
+  if (CONFIG.askName || CONFIG.name) {
+    const an = $("#scene-ask .name-title");
+    if (an) an.textContent = CONFIG.askName || CONFIG.name;
+  }
+  if (CONFIG.askQuestion) {
+    const aq = $("#scene-ask .ask-question");
+    if (aq) aq.textContent = CONFIG.askQuestion;
+  }
+  if (CONFIG.yesBtnText) {
+    const yb = $("#yesBtn");
+    if (yb) yb.textContent = CONFIG.yesBtnText;
+  }
+  if (CONFIG.noBtnText) {
+    const nb = $("#noBtn");
+    if (nb) nb.textContent = CONFIG.noBtnText;
+  }
+
+  // Success Section
+  if (CONFIG.successThankTitle) {
+    const st = $("#scene-success .thank-you");
+    if (st) st.textContent = CONFIG.successThankTitle;
+  }
+  const thankLines = $$("#scene-success .thank-line");
+  if (thankLines.length >= 2) {
+    if (CONFIG.successLine1) thankLines[0].textContent = CONFIG.successLine1;
+    if (CONFIG.successLine2) thankLines[1].textContent = CONFIG.successLine2;
+  }
+
+  // Footer
+  if (CONFIG.footerText) {
+    const ft = $("#site-footer");
+    if (ft) ft.textContent = CONFIG.footerText;
+  }
 }
+
+async function runHeroTyping(){
+  const text = (typeof CONFIG !== "undefined" && CONFIG.heroTypedText) ? CONFIG.heroTypedText : "Anh có điều muốn nói...";
+  await typeText($("#heroTyped"), text, 50);
+}
+
 
 /* ---------------------------------------------------------
    6. SCROLL REVEAL (IntersectionObserver) + PARALLAX BLOBS
@@ -232,7 +358,8 @@ function initStoryReveal(){
 --------------------------------------------------------- */
 function initDodgeButton(){
   const noBtn = $("#noBtn");
-  const phrases = ["💔 Không đồng ý", "Em chắc chứ?", "Đừng mà 🥺", "Nghĩ lại nha", "Không được đâu", "Anh buồn đó", "T_T", ":("];
+  const defaultPhrases = ["💔 Không đồng ý", "Em chắc chứ?", "Đừng mà 🥺", "Nghĩ lại nha", "Không được đâu", "Anh buồn đó", "T_T", ":("];
+  const phrases = (typeof CONFIG !== "undefined" && CONFIG.noDodgePhrases) ? CONFIG.noDodgePhrases : defaultPhrases;
   let dodgeCount = 0;
 
   function moveButton(){
@@ -259,6 +386,7 @@ function initDodgeButton(){
   noBtn.addEventListener("click", (e) => { e.preventDefault(); moveButton(); });
   noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveButton(); }, { passive: false });
 }
+
 
 /* ---------------------------------------------------------
    9. CELEBRATION FX ENGINE (shared particle pool)
@@ -483,7 +611,7 @@ function initKonamiCode(){
 
 function showKonamiMessage(){
   const el = document.createElement("div");
-  el.textContent = "❤️ Anh thích em rất nhiều.";
+  el.textContent = (typeof CONFIG !== "undefined" && CONFIG.konamiMessage) ? CONFIG.konamiMessage : "❤️ Anh thích em rất nhiều.";
   Object.assign(el.style, {
     position: "fixed", top: "50%", left: "50%",
     transform: "translate(-50%,-50%) scale(0.8)",
@@ -572,6 +700,7 @@ function initBackgroundMusic(){
    BOOTSTRAP
 --------------------------------------------------------- */
 window.addEventListener("DOMContentLoaded", () => {
+  applyConfigToDOM();
   initBackgroundCanvas();
   startFloatingHeartsLoop();
   initCursorTrail();
@@ -590,4 +719,5 @@ window.addEventListener("DOMContentLoaded", () => {
     await runHeroTyping();
   });
 });
+
 
