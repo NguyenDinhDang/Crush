@@ -339,6 +339,7 @@ img, .polaroid-photo{ -webkit-user-drag:none; user-select:none; }
   transform: rotate(var(--rot,0deg));
   transition: transform .4s var(--ease-soft), box-shadow .4s var(--ease-soft);
   width:190px;
+  cursor: pointer;
 }
 .polaroid:hover{
   transform: rotate(0deg) scale(1.08) translateY(-6px);
@@ -349,6 +350,20 @@ img, .polaroid-photo{ -webkit-user-drag:none; user-select:none; }
   width:100%; aspect-ratio: 1/1;
   border-radius:3px;
   background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+.polaroid-photo::after{
+  content: "📷 Thay ảnh";
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  color: #fff; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.polaroid:hover .polaroid-photo::after{
+  opacity: 1;
 }
 .ph-1{ background: linear-gradient(135deg, var(--c-pink-1), var(--c-blush-1)); }
 .ph-2{ background: linear-gradient(135deg, var(--c-pink-2), var(--c-blush-2)); }
@@ -358,6 +373,7 @@ img, .polaroid-photo{ -webkit-user-drag:none; user-select:none; }
   text-align:center; font-size:12.5px; margin-top:10px; color: var(--text-soft);
   font-style:italic;
 }
+
 
 /* =========================================================
    QUOTE

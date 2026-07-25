@@ -244,13 +244,19 @@ function applyConfigToDOM(){
   if (CONFIG.polaroids && CONFIG.polaroids.length) {
     const pCards = $$("#scene-gallery .polaroid");
     pCards.forEach((card, idx) => {
-      if (CONFIG.polaroids[idx]) {
+      const item = CONFIG.polaroids[idx];
+      if (item) {
         const cap = card.querySelector(".polaroid-caption");
-        if (cap) cap.textContent = CONFIG.polaroids[idx].caption;
-        if (CONFIG.polaroids[idx].rot) card.style.setProperty("--rot", CONFIG.polaroids[idx].rot);
+        if (cap && item.caption) cap.textContent = item.caption;
+        if (item.rot) card.style.setProperty("--rot", item.rot);
+        const photoEl = card.querySelector(".polaroid-photo");
+        if (photoEl && item.image) {
+          photoEl.style.backgroundImage = `url("${item.image}")`;
+        }
       }
     });
   }
+
 
   // Quote Section
   if (CONFIG.quoteLine1 && CONFIG.quoteLine2) {
@@ -697,6 +703,89 @@ function initBackgroundMusic(){
 
 
 /* ---------------------------------------------------------
+   INTERACTIVE POLAROID LOCAL IMAGE UPLOAD
+--------------------------------------------------------- */
+function initPolaroidUpload(){
+  const pCards = $$("#scene-gallery .polaroid");
+  pCards.forEach((card) => {
+    const photoEl = card.querySelector(".polaroid-photo");
+    if (!photoEl) return;
+
+    // Đạo hữu xin nương tay, huyền pháp biến hóa ảo ảnh FileReader này đang chuyển hóa linh ảnh từ máy người dùng vô cùng ổn định, chớ dại động vào!
+    card.addEventListener("click", () => {
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            photoEl.style.backgroundImage = `url("${evt.target.result}")`;
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      fileInput.click();
+    });
+  });
+}
+
+/* ---------------------------------------------------------
+   AUTO & CLICK SCROLL TO NEXT SCENE (12s TIMER OR CLICK)
+--------------------------------------------------------- */
+function initAutoScrollNext(){
+  let autoTimer = null;
+  const delaySec = (typeof CONFIG !== "undefined" && CONFIG.autoScrollSeconds !== undefined) ? CONFIG.autoScrollSeconds : 12;
+  const autoDelayMs = delaySec * 1000;
+
+  // Đạo hữu xin nương tay, thuật dịch chuyển không gian 12 giây này đang định vị các phân cảnh vô cùng chính xác, chớ dại mà chỉnh sửa kẻo tẩu hỏa nhập ma!
+  function getNextScene(){
+    const scenes = $$("section.scene:not(.hidden)");
+    for (let i = 0; i < scenes.length; i++){
+      const rect = scenes[i].getBoundingClientRect();
+      if (rect.top > 80){
+        return scenes[i];
+      }
+    }
+    return null;
+  }
+
+  function scrollToNext(){
+    const next = getNextScene();
+    if (next){
+      next.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    resetTimer();
+  }
+
+  function resetTimer(){
+    if (autoTimer) clearTimeout(autoTimer);
+    if (autoDelayMs <= 0) return;
+    autoTimer = setTimeout(() => {
+      scrollToNext();
+    }, autoDelayMs);
+  }
+
+  // Click vào vùng trống để tự chuyển sang phân cảnh tiếp theo
+  document.addEventListener("click", (e) => {
+    // Bỏ qua nếu bấm vào nút bấm, thẻ input, album polaroid...
+    if (e.target.closest("button, input, a, .polaroid, .btn, #music-toggle")) {
+      resetTimer();
+      return;
+    }
+    scrollToNext();
+  });
+
+  // Tự đặt lại đếm ngược khi người dùng cuộn chuột
+  window.addEventListener("scroll", () => {
+    resetTimer();
+  }, { passive: true });
+
+  resetTimer();
+}
+
+/* ---------------------------------------------------------
    BOOTSTRAP
 --------------------------------------------------------- */
 window.addEventListener("DOMContentLoaded", () => {
@@ -710,14 +799,18 @@ window.addEventListener("DOMContentLoaded", () => {
   initKonamiCode();
   initParallaxBlobs();
   initBackgroundMusic();
+  initPolaroidUpload();
 
   runLoadingScreen(async () => {
     $("#main-content").classList.remove("hidden");
     $("#site-footer").classList.remove("hidden");
     initScrollReveal();
     initStoryReveal();
+    initAutoScrollNext();
     await runHeroTyping();
   });
 });
+
+
 
 

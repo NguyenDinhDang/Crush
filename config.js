@@ -8,10 +8,14 @@ const CONFIG = {
   name: "Trang",
 
   // Tên file nhạc nền (đặt file nhạc cùng thư mục với index.html)
-  musicFile: "music.mp3",
+  musicFile: "aiduaemve.mp3",
+
+  // Tự động cuộn trang (Thời gian tính bằng giây, ví dụ 12 = 12 giây, 0 = tắt)
+  autoScrollSeconds: 12,
 
   // Tiêu đề thẻ trang web (Tab trình duyệt)
   pageTitle: "Trang ơi...",
+
 
   // Dòng chữ ở màn hình chờ (Loading)
   loadingText: "Đang chuẩn bị một điều đặc biệt dành cho Trang...",
@@ -107,7 +111,7 @@ const CONFIG = {
   successLine2: "Anh sẽ cố gắng làm em hạnh phúc.",
 
   // Chân trang (Footer)
-  footerText: "Made with ❤️ just for Trang",
+  footerText: "Made with ❤️ just for Thiên Trang",
 
   // Easter Egg (Mật mã Konami / Bấm phím mũi tên)
   konamiMessage: "❤️ Anh thích em rất nhiều."
