@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang ơi...</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== MÀN HÌNH LOADING ===== -->
+  <div id="loading-screen">
+    <div class="loading-heart">❤️</div>
+    <div class="loading-bar-track">
+      <div class="loading-bar-fill" id="loadingBarFill"></div>
+    </div>
+    <p class="loading-text">Đang chuẩn bị một điều đặc biệt...</p>
+  </div>
+
+  <!-- ===== NỀN ĐỘNG (particle / tim bay / sao / bubble) ===== -->
+  <canvas id="bg-canvas"></canvas>
+  <div id="floating-hearts-layer"></div>
+  <div id="cursor-hearts-layer"></div>
+
+  <!-- ===== NỘI DUNG CHÍNH ===== -->
+  <main id="main-content" class="hidden">
+
+    <!-- Màn 1: mở đầu -->
+    <section class="scene" id="scene-intro">
+      <div class="big-heart pulse">❤️</div>
+      <h1 class="name-title" id="nameTitle"></h1>
+      <p class="typed-line" id="introTyped"></p>
+    </section>
+
+    <!-- Màn 2: các câu chuyện xuất hiện lần lượt -->
+    <section class="scene hidden" id="scene-story">
+      <div class="story-lines" id="storyLines"></div>
+    </section>
+
+    <!-- Màn 3: lời tỏ tình + 2 nút -->
+    <section class="scene hidden" id="scene-ask">
+      <div class="big-heart glow">❤️</div>
+      <h1 class="name-title">Thiên Trang</h1>
+      <h2 class="ask-question">Làm người yêu anh nhé?</h2>
+
+      <div class="buttons-wrap">
+        
+        <a href="https://www.facebook.com/share/19ABUoyRNH/?mibextid=wwXIfr" target="_blank" id="yesBtn" class="btn btn-yes">❤️ Đồng ý</a>
+        
+        <button id="noBtn" class="btn btn-no">💔 Không đồng ý</button>
+      </div>
+    </section>
+
+    <!-- Màn 4: sau khi đồng ý -->
+    <section class="scene hidden" id="scene-success">
+      <div class="giant-heart" id="giantHeart">❤️</div>
+      <h1 class="thank-you">Cảm ơn em ❤️</h1>
+      <p class="thank-line">Từ hôm nay...</p>
+      <p class="thank-line">Anh sẽ cố gắng làm em hạnh phúc.</p>
+    </section>
+
+  </main>
+
+  <canvas id="fx-canvas"></canvas>
+
+  <footer id="site-footer" class="hidden">Made with ❤️ for Trang</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
