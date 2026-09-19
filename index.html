@@ -1,23 +1,36 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trang ơi...</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang ơi...</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Three.js for 3D Cinematic Particle Heart Galaxy -->
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- ===== AUDIO & MUSIC CONTROLLER ===== -->
-  <!-- Đặt tên file audio của bạn ở thuộc tính src bên dưới (ví dụ: src="music.mp3" hoặc src="nhac.mp3") -->
-  <audio id="bg-music" src="aiduaemve.mp3" autoplay loop preload="auto"></audio>
-  <button id="music-toggle" class="music-toggle-btn" aria-label="Toggle Music">🎵</button>
-
-
+  <audio id="bg-music" src="aiduaemve.mp3" loop preload="auto"></audio>
+  <button id="music-toggle" class="music-toggle-btn" aria-label="Bật hoặc tắt nhạc" title="Bật hoặc tắt nhạc">
+    <i data-lucide="music"></i>
+  </button>
 
   <!-- ===== LOADING SCREEN ===== -->
   <div id="loading-screen">
-    <div class="loading-heart">❤️</div>
+    <div class="loading-heart">
+      <i data-lucide="heart"></i>
+    </div>
     <div class="loading-bar-track">
       <div class="loading-bar-fill" id="loadingBarFill"></div>
     </div>
@@ -32,17 +45,19 @@
   <div class="blob blob-b"></div>
   <div class="blob blob-c"></div>
 
-  <!-- ===== MAIN ===== -->
+  <!-- ===== MAIN CONTENT ===== -->
   <main id="main-content" class="hidden">
 
     <!-- SECTION 1 — HERO -->
     <section class="scene" id="scene-hero">
-      <div class="big-heart pulse">❤️</div>
+      <div class="hero-badge">
+        <i data-lucide="heart" class="hero-icon"></i>
+      </div>
       <h1 class="name-title">Trang...</h1>
       <p class="typed-line" id="heroTyped"></p>
       <div class="scroll-hint">
         <span>Kéo xuống</span>
-        <div class="scroll-arrow"></div>
+        <i data-lucide="chevron-down" class="scroll-chevron"></i>
       </div>
     </section>
 
@@ -66,7 +81,7 @@
         <div class="timeline-line"></div>
 
         <div class="timeline-item reveal-item" data-fx="slide-right">
-          <div class="timeline-dot">✨</div>
+          <div class="timeline-dot"><i data-lucide="sparkles"></i></div>
           <div class="timeline-card glass">
             <h3>Lần đầu gặp</h3>
             <p>Một khoảnh khắc rất bình thường, nhưng lại trở thành khởi đầu.</p>
@@ -74,7 +89,7 @@
         </div>
 
         <div class="timeline-item reveal-item" data-fx="slide-left">
-          <div class="timeline-dot">😊</div>
+          <div class="timeline-dot"><i data-lucide="message-circle"></i></div>
           <div class="timeline-card glass">
             <h3>Lần đầu nói chuyện</h3>
             <p>Vài câu ngại ngùng, nhưng lại khiến anh nhớ mãi.</p>
@@ -82,7 +97,7 @@
         </div>
 
         <div class="timeline-item reveal-item" data-fx="slide-right">
-          <div class="timeline-dot">☕</div>
+          <div class="timeline-dot"><i data-lucide="coffee"></i></div>
           <div class="timeline-card glass">
             <h3>Những lần trò chuyện</h3>
             <p>Càng nói chuyện, anh càng thấy thoải mái và vui hơn.</p>
@@ -90,7 +105,7 @@
         </div>
 
         <div class="timeline-item reveal-item" data-fx="slide-left">
-          <div class="timeline-dot">🌸</div>
+          <div class="timeline-dot"><i data-lucide="flower-2"></i></div>
           <div class="timeline-card glass">
             <h3>Những lần nhớ em</h3>
             <p>Có những hôm chẳng vì lý do gì, anh vẫn nghĩ về em.</p>
@@ -98,7 +113,7 @@
         </div>
 
         <div class="timeline-item reveal-item" data-fx="slide-right">
-          <div class="timeline-dot glow-dot">❤️</div>
+          <div class="timeline-dot glow-dot"><i data-lucide="heart"></i></div>
           <div class="timeline-card glass accent-card">
             <h3>Hôm nay</h3>
             <p>Anh quyết định nói ra điều mà anh giữ trong lòng bấy lâu.</p>
@@ -112,19 +127,39 @@
       <h2 class="section-title reveal-item" data-fx="fade-up">Vài khoảnh khắc</h2>
       <div class="gallery">
         <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:-6deg;">
-          <div class="polaroid-photo ph-1"></div>
+          <div class="polaroid-photo ph-1">
+            <div class="polaroid-overlay">
+              <i data-lucide="camera"></i>
+              <span>Thay ảnh</span>
+            </div>
+          </div>
           <p class="polaroid-caption">khoảnh khắc 01</p>
         </div>
         <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:4deg;">
-          <div class="polaroid-photo ph-2"></div>
+          <div class="polaroid-photo ph-2">
+            <div class="polaroid-overlay">
+              <i data-lucide="camera"></i>
+              <span>Thay ảnh</span>
+            </div>
+          </div>
           <p class="polaroid-caption">khoảnh khắc 02</p>
         </div>
         <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:-3deg;">
-          <div class="polaroid-photo ph-3"></div>
+          <div class="polaroid-photo ph-3">
+            <div class="polaroid-overlay">
+              <i data-lucide="camera"></i>
+              <span>Thay ảnh</span>
+            </div>
+          </div>
           <p class="polaroid-caption">khoảnh khắc 03</p>
         </div>
         <div class="polaroid reveal-item" data-fx="scale-in" style="--rot:7deg;">
-          <div class="polaroid-photo ph-4"></div>
+          <div class="polaroid-photo ph-4">
+            <div class="polaroid-overlay">
+              <i data-lucide="camera"></i>
+              <span>Thay ảnh</span>
+            </div>
+          </div>
           <p class="polaroid-caption">khoảnh khắc 04</p>
         </div>
       </div>
@@ -140,20 +175,30 @@
 
     <!-- SECTION 6 — ASK -->
     <section class="scene reveal-section" id="scene-ask">
-      <div class="big-heart glow reveal-item" data-fx="scale-in">❤️</div>
+      <div class="ask-badge reveal-item" data-fx="scale-in">
+        <i data-lucide="heart" class="ask-icon"></i>
+      </div>
       <h1 class="name-title reveal-item" data-fx="scale-in">Trang...</h1>
       <h2 class="ask-question reveal-item" data-fx="fade-up">Làm người yêu anh nhé?</h2>
 
       <div class="buttons-wrap">
-        <button id="yesBtn" class="btn btn-yes">❤️ Đồng ý</button>
-        <button id="noBtn" class="btn btn-no">💔 Không đồng ý</button>
+        <button id="yesBtn" class="btn btn-yes" aria-label="Đồng ý">
+          <i data-lucide="heart"></i>
+          <span class="btn-text">Đồng ý</span>
+        </button>
+        <button id="noBtn" class="btn btn-no" aria-label="Không đồng ý">
+          <i data-lucide="heart-crack"></i>
+          <span class="btn-text">Không đồng ý</span>
+        </button>
       </div>
     </section>
 
     <!-- SECTION 7 — SUCCESS -->
     <section class="scene hidden" id="scene-success">
-      <div class="giant-heart" id="giantHeart">❤️</div>
-      <h1 class="thank-you">Cảm ơn em ❤️</h1>
+      <div class="giant-heart" id="giantHeart">
+        <i data-lucide="heart"></i>
+      </div>
+      <h1 class="thank-you">Cảm ơn em</h1>
       <p class="thank-line">Từ hôm nay...</p>
       <p class="thank-line">Anh sẽ cố gắng làm em hạnh phúc.</p>
     </section>
@@ -163,7 +208,31 @@
   <canvas id="fx-canvas"></canvas>
   <div id="flash-overlay"></div>
 
-  <footer id="site-footer" class="hidden">Made with ❤️ just for Trang</footer>
+  <!-- ===== CINEMATIC 3D HEART GALAXY OVERLAY ===== -->
+  <div id="heart-galaxy-overlay" class="galaxy-overlay" aria-hidden="true">
+    <canvas id="heart-galaxy-canvas"></canvas>
+
+    <div id="galaxy-success-card" class="galaxy-success-card">
+      <div class="galaxy-badge">
+        <i data-lucide="sparkles"></i>
+      </div>
+      <h1 class="galaxy-title">Cảm ơn em</h1>
+      <p class="galaxy-line-1">Từ hôm nay...</p>
+      <p class="galaxy-line-2">Anh sẽ cố gắng làm em hạnh phúc.</p>
+      <div class="galaxy-actions">
+        <button id="btn-replay-galaxy" class="galaxy-btn-subtle" aria-label="Xem lại khoảnh khắc">
+          <i data-lucide="rotate-ccw"></i>
+          <span>Xem lại</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer id="site-footer" class="hidden">
+    <span>Made with</span>
+    <i data-lucide="heart" class="footer-heart"></i>
+    <span class="footer-text">just for Thiên Trang</span>
+  </footer>
 
   <script src="config.js"></script>
   <script src="script.js"></script>

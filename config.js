@@ -10,12 +10,11 @@ const CONFIG = {
   // Tên file nhạc nền (đặt file nhạc cùng thư mục với index.html)
   musicFile: "aiduaemve.mp3",
 
-  // Tự động cuộn trang (Thời gian tính bằng giây, ví dụ 12 = 12 giây, 0 = tắt)
-  autoScrollSeconds: 12,
+  // Tự động cuộn trang (Thời gian tính bằng giây, ví dụ 7 = 7 giây, 0 = tắt)
+  autoScrollSeconds: 7,
 
   // Tiêu đề thẻ trang web (Tab trình duyệt)
   pageTitle: "Trang ơi...",
-
 
   // Dòng chữ ở màn hình chờ (Loading)
   loadingText: "Đang chuẩn bị một điều đặc biệt dành cho Trang...",
@@ -36,35 +35,35 @@ const CONFIG = {
     { text: "Nhưng anh muốn trong tương lai đó luôn có em.", fx: "scale-in", isAccent: true }
   ],
 
-  // Phần 3: Timeline (Dòng thời gian)
+  // Phần 3: Timeline (Dòng thời gian - Sử dụng mã định danh icon Lucide)
   timelineTitle: "Câu chuyện của tụi mình",
   timelineItems: [
     {
-      dot: "✨",
+      icon: "sparkles",
       title: "Lần đầu gặp",
       desc: "Một khoảnh khắc rất bình thường, nhưng lại trở thành khởi đầu.",
       direction: "slide-right"
     },
     {
-      dot: "😊",
+      icon: "message-circle",
       title: "Lần đầu nói chuyện",
       desc: "Vài câu ngại ngùng, nhưng lại khiến anh nhớ mãi.",
       direction: "slide-left"
     },
     {
-      dot: "☕",
+      icon: "coffee",
       title: "Những lần trò chuyện",
       desc: "Càng nói chuyện, anh càng thấy thoải mái và vui hơn.",
       direction: "slide-right"
     },
     {
-      dot: "🌸",
+      icon: "flower-2",
       title: "Những lần nhớ em",
       desc: "Có những hôm chẳng vì lý do gì, anh vẫn nghĩ về em.",
       direction: "slide-left"
     },
     {
-      dot: "❤️",
+      icon: "heart",
       title: "Hôm nay",
       desc: "Anh quyết định nói ra điều mà anh giữ trong lòng bấy lâu.",
       direction: "slide-right",
@@ -82,7 +81,6 @@ const CONFIG = {
     { image: "", caption: "khoảnh khắc 04", rot: "7deg" }
   ],
 
-
   // Phần 5: Trích dẫn (Quote)
   quoteLine1: "Đôi khi...",
   quoteLine2: "Hạnh phúc chỉ đơn giản là có ai đó để nhớ.",
@@ -90,29 +88,39 @@ const CONFIG = {
   // Phần 6: Lời tỏ tình
   askName: "Trang...",
   askQuestion: "Làm người yêu anh nhé?",
-  yesBtnText: "❤️ Đồng ý",
-  noBtnText: "💔 Không đồng ý",
+  yesBtnText: "Đồng ý",
+  noBtnText: "Không đồng ý",
   
   // Các câu chối từ khi bấm/rê chuột nút "Không"
   noDodgePhrases: [
-    "💔 Không đồng ý",
+    "Không đồng ý",
     "Em chắc chứ?",
-    "Đừng mà 🥺",
+    "Đừng mà...",
     "Nghĩ lại nha",
     "Không được đâu",
     "Anh buồn đó",
-    "T_T",
-    ":("
+    "Thật sao em?",
+    "Suy nghĩ lại chút đi mà"
   ],
 
   // Phần 7: Màn hình thành công khi chọn Đồng Ý
-  successThankTitle: "Cảm ơn em ❤️",
+  successThankTitle: "Cảm ơn em",
   successLine1: "Từ hôm nay...",
   successLine2: "Anh sẽ cố gắng làm em hạnh phúc.",
 
   // Chân trang (Footer)
-  footerText: "Made with ❤️ just for Thiên Trang",
+  footerText: "Made with love just for Thiên Trang",
+
+  // Phần 8: Hiệu ứng 3D Heart Galaxy (Các câu chữ tình cảm bay lơ lửng trong không gian 3D)
+  floatingRomanticTexts: [
+    "Yêu em",
+    "Forever",
+    "Love you",
+    "Em là điều tuyệt vời nhất",
+    "Together",
+    "Bình yên bên em"
+  ],
 
   // Easter Egg (Mật mã Konami / Bấm phím mũi tên)
-  konamiMessage: "❤️ Anh thích em rất nhiều."
+  konamiMessage: "Anh thích em rất nhiều."
 };
